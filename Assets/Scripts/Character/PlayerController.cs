@@ -42,6 +42,24 @@ namespace Character
             moveController.Jump();
         }
 
+        public void OnEnter(InputValue value)
+        {
+            // Check if near any store
+            Collider[] hits = Physics.OverlapSphere(transform.position, 1f); // radius = how close you must be
+            foreach (var hit in hits)
+            {
+                StoreEntrance store = hit.GetComponent<StoreEntrance>();
+                if (store != null)
+                {
+                    store.EnterStore();  // Calls the store's scene change
+                    return;           // Skip farm interaction
+                }
+            }
+
+            // If no store nearby, do nothing (or optionally show a debug)
+            Debug.Log("No store nearby.");
+        }
+
         public void OnInteract(InputValue value)
         {
             FarmTile tile = tileSelector.GetSelectedTile();
