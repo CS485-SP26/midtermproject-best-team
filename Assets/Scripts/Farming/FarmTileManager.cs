@@ -61,7 +61,7 @@ namespace Farming
                     clone.name = "Farm Tile " + count++.ToString();
                     spawnPos.x += clone.transform.localScale.x + tileGap;
                     clone.transform.parent = transform; // build heirarchy
-                    tiles.Add(clone.GetComponent<FarmTile>()); // for resize/delete
+                    tiles.Add(clone.GetComponent<FarmTile>());
                 }
                 spawnPos.z += clone.transform.localScale.z + tileGap;
                 spawnPos.x = transform.position.x;

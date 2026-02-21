@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
 
 namespace Core
 {
@@ -21,9 +22,17 @@ namespace Core
             } /* no set read only */
         }
 
-        int funds;
+        private int funds;
+        public int Funds {
+            get { return funds; }
+            private set
+            {
+                funds = value;
+                OnFundsChanged?.Invoke(funds);
+            }
+        }
 
-        public int Funds { get; set; }
+        public event Action<int> OnFundsChanged;
 
         void Start()
         {
@@ -35,6 +44,12 @@ namespace Core
 
             instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        public void AddFunds(int amount)
+        {
+            Funds += amount;
+            Debug.Log("Funds: " + Funds);
         }
 
         public void LoadScenebyName(string name)

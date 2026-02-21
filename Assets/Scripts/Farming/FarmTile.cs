@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Environment;
+using Core;
 
 namespace Farming 
 {
@@ -9,6 +10,8 @@ namespace Farming
         public enum Condition { Grass, Tilled, Watered }
 
         [SerializeField] private Condition tileCondition = Condition.Grass; 
+
+        [SerializeField] private FarmTileManager manager;
 
         [Header("Visuals")]
         [SerializeField] private Material grassMaterial;
@@ -42,7 +45,10 @@ namespace Farming
             switch(tileCondition)
             {
                 case FarmTile.Condition.Grass: Till(); break;
-                case FarmTile.Condition.Tilled: Water(); break;
+                case FarmTile.Condition.Tilled:
+                    Water();
+                    GameManager.Instance.AddFunds(10);
+                    break;
                 case FarmTile.Condition.Watered: Debug.Log("Ready for planting"); break;
             }
             daysSinceLastInteraction = 0;

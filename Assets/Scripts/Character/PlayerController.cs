@@ -48,10 +48,10 @@ namespace Character
             Collider[] hits = Physics.OverlapSphere(transform.position, 1f); // radius = how close you must be
             foreach (var hit in hits)
             {
-                StoreEntrance store = hit.GetComponent<StoreEntrance>();
+                SceneEntrance store = hit.GetComponent<SceneEntrance>();
                 if (store != null)
                 {
-                    store.EnterStore();  // Calls the store's scene change
+                    store.EnterScene();  // Calls the store's scene change
                     return;           // Skip farm interaction
                 }
             }

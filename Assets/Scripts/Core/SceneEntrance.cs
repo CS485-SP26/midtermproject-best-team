@@ -1,17 +1,17 @@
 using UnityEngine;
 using Core;
 
-public class StoreEntrance : MonoBehaviour
+public class SceneEntrance : MonoBehaviour
 {
     public GameObject enterPrompt;
-    public string storeSceneName = "Scene2-Store";
+    [SerializeField] public string sceneName;
     private bool playerInRange = false;
 
-    public void EnterStore()
+    public void EnterScene()
     {
         if (playerInRange)
         {
-            GameManager.Instance.LoadScenebyName(storeSceneName);
+            GameManager.Instance.LoadScenebyName(sceneName);
         }
     }
 
