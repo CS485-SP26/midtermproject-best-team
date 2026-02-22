@@ -3,20 +3,19 @@ using UnityEngine;
 using Environment;
 using Core;
 
-namespace Farming 
+namespace Farming
 {
     public class FarmTile : MonoBehaviour
     {
         public enum Condition { Grass, Tilled, Watered }
-
-        [SerializeField] private Condition tileCondition = Condition.Grass; 
-
+        [SerializeField] private Condition tileCondition = Condition.Grass;
         [SerializeField] private FarmTileManager manager;
 
         [Header("Visuals")]
         [SerializeField] private Material grassMaterial;
         [SerializeField] private Material tilledMaterial;
         [SerializeField] private Material wateredMaterial;
+
         MeshRenderer tileRenderer;
 
         [Header("Audio")]
@@ -25,15 +24,14 @@ namespace Farming
         [SerializeField] private AudioSource waterAudio;
 
         List<Material> materials = new List<Material>();
-
         private int daysSinceLastInteraction = 0;
-        public FarmTile.Condition GetCondition { get { return tileCondition; } } // TODO: Consider what the set would do?
+
+        public FarmTile.Condition GetCondition { get { return tileCondition; } }
 
         void Start()
         {
             tileRenderer = GetComponent<MeshRenderer>();
             Debug.Assert(tileRenderer, "FarmTile requires a MeshRenderer");
-
             foreach (Transform edge in transform)
             {
                 materials.Add(edge.gameObject.GetComponent<MeshRenderer>().material);
@@ -42,14 +40,14 @@ namespace Farming
 
         public void Interact()
         {
-            switch(tileCondition)
+            switch (tileCondition)
             {
                 case FarmTile.Condition.Grass: Till(); break;
                 case FarmTile.Condition.Tilled:
                     Water();
                     GameManager.Instance.AddFunds(10);
                     break;
-                case FarmTile.Condition.Watered: Debug.Log("Ready for planting"); break;
+                case FarmTile.Condition.Watered: Debug.Log("Tile already watered!"); break;
             }
             daysSinceLastInteraction = 0;
         }
@@ -57,6 +55,8 @@ namespace Farming
         public void Till()
         {
             tileCondition = FarmTile.Condition.Tilled;
+            if (tileRenderer == null)
+                tileRenderer = GetComponent<MeshRenderer>();
             UpdateVisual();
             tillAudio?.Play();
         }
@@ -64,14 +64,16 @@ namespace Farming
         public void Water()
         {
             tileCondition = FarmTile.Condition.Watered;
+            if (tileRenderer == null)
+                tileRenderer = GetComponent<MeshRenderer>();
             UpdateVisual();
             waterAudio?.Play();
         }
 
         private void UpdateVisual()
         {
-            if(tileRenderer == null) return;
-            switch(tileCondition)
+            if (tileRenderer == null) return;
+            switch (tileCondition)
             {
                 case FarmTile.Condition.Grass: tileRenderer.material = grassMaterial; break;
                 case FarmTile.Condition.Tilled: tileRenderer.material = tilledMaterial; break;
@@ -86,8 +88,8 @@ namespace Farming
                 if (active)
                 {
                     m.EnableKeyword("_EMISSION");
-                } 
-                else 
+                }
+                else
                 {
                     m.DisableKeyword("_EMISSION");
                 }
@@ -98,10 +100,10 @@ namespace Farming
         public void OnDayPassed()
         {
             daysSinceLastInteraction++;
-            if(daysSinceLastInteraction >= 2)
+            if (daysSinceLastInteraction >= 2)
             {
-                if(tileCondition == FarmTile.Condition.Watered) tileCondition = FarmTile.Condition.Tilled;
-                else if(tileCondition == FarmTile.Condition.Tilled) tileCondition = FarmTile.Condition.Grass;
+                if (tileCondition == FarmTile.Condition.Watered) tileCondition = FarmTile.Condition.Tilled;
+                else if (tileCondition == FarmTile.Condition.Tilled) tileCondition = FarmTile.Condition.Grass;
             }
             UpdateVisual();
         }

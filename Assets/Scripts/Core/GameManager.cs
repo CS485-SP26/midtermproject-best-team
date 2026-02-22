@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.UI;
+using Farming;
 
 namespace Core
 {
-
-    public class GameManager:MonoBehaviour
+    public class GameManager : MonoBehaviour
     {
         private static GameManager instance;
         public static GameManager Instance {
@@ -18,9 +18,8 @@ namespace Core
                     instance = go.AddComponent<GameManager>();
                     DontDestroyOnLoad(go);
                 }
-
                 return instance;
-            } /* no set read only */
+            }
         }
 
         private int funds;
@@ -32,19 +31,49 @@ namespace Core
                 OnFundsChanged?.Invoke(funds);
             }
         }
-
         public event Action<int> OnFundsChanged;
+
+        private int seeds;
+        public int Seeds {
+            get { return seeds; }
+            private set {
+                seeds = value;
+                OnSeedsChanged?.Invoke(seeds);
+            }
+        }
+        public event Action<int> OnSeedsChanged;
+
+        private FarmTile.Condition[] savedTileStates;
+
+        public void SaveTileStates(FarmTile[] tiles)
+        {
+            savedTileStates = new FarmTile.Condition[tiles.Length];
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                savedTileStates[i] = tiles[i].GetCondition;
+            }
+        }
+
+        public FarmTile.Condition[] GetSavedTileStates()
+        {
+            return savedTileStates;
+        }
+
+        public void AddSeeds(int amount)
+        {
+            Seeds += amount;
+            Debug.Log("Seeds: " + Seeds);
+        }
 
         private Image fillImage;
 
         void Start()
         {
-            // if (instance != null && instance != this)
-            // {
-            //     Destroy(this.gameObject);
-            //     return;
-            // }
-
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -60,12 +89,13 @@ namespace Core
             SceneManager.LoadScene(name);
         }
 
-        public void BuySeed(int amount)
+        public void BuySeed(int cost, int amount)
         {
-            if (Funds >= amount)
+            if (Funds >= cost)
             {
-                Funds -= amount;
-                Debug.Log("Bought seed for $" + amount);
+                Funds -= cost;
+                Seeds += amount;
+                Debug.Log("Bought " + amount + " seed(s) for $" + cost);
             }
             else
             {
@@ -73,20 +103,13 @@ namespace Core
             }
         }
 
+        public void BuySeedFromStore()
+        {
+            BuySeed(10, 5);
+        }
+
         public void AddWater(int amount)
         {
-            // Implement water logic here
-
-            
-            if (Funds >= amount)
-            {
-            Funds -= amount; // Assuming water costs money
-            }
-            else
-            {
-                Debug.Log("Not enough funds to buy water.");
-            }
-
             Debug.Log("Added " + amount + " units of water.");
         }
     }

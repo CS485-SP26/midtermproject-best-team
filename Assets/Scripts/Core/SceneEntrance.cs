@@ -1,5 +1,6 @@
 using UnityEngine;
 using Core;
+using Farming;
 
 public class SceneEntrance : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class SceneEntrance : MonoBehaviour
     {
         if (playerInRange)
         {
+            WinCondition wc = FindObjectOfType<WinCondition>();
+            if (wc != null) wc.SaveTiles();
             GameManager.Instance.LoadScenebyName(sceneName);
         }
     }

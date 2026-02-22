@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Environment;
-
 namespace Farming
 {
-    public class FarmTileManager:MonoBehaviour
+    public class FarmTileManager : MonoBehaviour
     {
         [SerializeField] private GameObject farmTilePrefab;
         [SerializeField] DayController dayController;
@@ -13,7 +12,7 @@ namespace Farming
         [SerializeField] private int cols = 4;
         [SerializeField] private float tileGap = 0.1f;
         private List<FarmTile> tiles = new List<FarmTile>();
-        
+
         void Start()
         {
             Debug.Assert(farmTilePrefab, "FarmTileManager requires a farmTilePrefab");
@@ -27,7 +26,7 @@ namespace Farming
 
         void OnDisable()
         {
-            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);            
+            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);
         }
 
         public void OnDayPassed()
@@ -47,12 +46,16 @@ namespace Farming
             }
         }
 
+        public FarmTile[] GetTiles()
+        {
+            return tiles.ToArray();
+        }
+
         void InstantiateTiles()
         {
             Vector3 spawnPos = transform.position;
             int count = 0;
-            GameObject clone = null; 
-
+            GameObject clone = null;
             for (int c = 0; c < cols; c++)
             {
                 for (int r = 0; r < rows; r++)
@@ -60,7 +63,7 @@ namespace Farming
                     clone = Instantiate(farmTilePrefab, spawnPos, Quaternion.identity);
                     clone.name = "Farm Tile " + count++.ToString();
                     spawnPos.x += clone.transform.localScale.x + tileGap;
-                    clone.transform.parent = transform; // build heirarchy
+                    clone.transform.parent = transform;
                     tiles.Add(clone.GetComponent<FarmTile>());
                 }
                 spawnPos.z += clone.transform.localScale.z + tileGap;
@@ -68,21 +71,17 @@ namespace Farming
             }
         }
 
-        // ***************************************************************** //
-        // Below this line is code to suppor the Unity Editor (Advanced)
-        // Please feel free to disregard everything below this
-        // ***************************************************************** //
         void OnValidate()
         {
             #if UNITY_EDITOR
             EditorApplication.delayCall += () => {
-                if (this == null) return; // Guard against the object being deleted
+                if (this == null) return;
                 ValidateGrid();
             };
             #endif
         }
 
-        void ValidateGrid() 
+        void ValidateGrid()
         {
             if (!farmTilePrefab) return;
             tiles.Clear();
@@ -93,9 +92,7 @@ namespace Farming
                     tiles.Add(tile);
                 }
             }
-
             int newCount = rows * cols;
-
             if (tiles.Count != newCount)
             {
                 DestroyTiles();

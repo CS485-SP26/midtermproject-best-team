@@ -12,7 +12,7 @@ namespace Character
         AnimatedController animatedController;
 
         [SerializeField] private ProgressBar wateringBar; // UI bar showing remaining water
-        [SerializeField] private float maxWaterAmount = 100f; // total water capacity
+        [SerializeField] private float maxWaterAmount = 400f; // total water capacity
         [SerializeField] private float waterPerTile = 20f;   // amount used per watering
 
         private float currentWaterAmount; // starts full
