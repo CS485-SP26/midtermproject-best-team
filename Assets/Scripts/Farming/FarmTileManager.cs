@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Environment;
+using Core;
+
 namespace Farming
 {
     public class FarmTileManager : MonoBehaviour
@@ -18,7 +20,6 @@ namespace Farming
             Debug.Assert(farmTilePrefab, "FarmTileManager requires a farmTilePrefab");
             Debug.Assert(dayController, "FarmTileManager requires a dayController");
         }
-
         void OnEnable()
         {
             dayController.dayPassedEvent.AddListener(this.OnDayPassed);
@@ -31,6 +32,7 @@ namespace Farming
 
         public void OnDayPassed()
         {
+            //GameManager.Instance.SetCurrentDay(dayController.CurrentDay);
             IncrementDays(1);
         }
 

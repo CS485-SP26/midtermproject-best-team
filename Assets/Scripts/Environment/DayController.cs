@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro; // Important for TextMeshPro
 using UnityEngine.Events;
 using Farming;
+using Core;
 
 namespace Environment 
 {
@@ -22,6 +23,21 @@ namespace Environment
 
         public UnityEvent dayPassedEvent = new UnityEvent(); // Invoke() at end of day
 
+        //restore cuurent day from GameManager
+        private void Start()
+        {
+            if (GameManager.Instance != null)
+            {
+                //currentDay = GameManager.Instance.CurrentDay;
+
+                //updates label immediately
+                if(dayLabel)
+                dayLabel.SetText("Days:{0}", currentDay);
+
+                Debug.Assert(sunLight, "DayController requires a 'Sun'");
+            }
+        }
+
         public void AdvanceDay()
         {
             Debug.Assert(sunLight, "DayController requires a 'Sun'");
@@ -30,16 +46,21 @@ namespace Environment
             dayProgressSeconds = 0f; // Reset to start a new day
             currentDay++;
             
-            if (dayLabel)
+            if(GameManager.Instance != null)
             {
-                // Don't do this! It generates garbage (will eventually invoke Garbage Collect)
-                //dayLabel.text="Days: " + currentDay.ToString();
+                //GameManager.Instance.SetCurrentDay(currentDay);}
+            
+                if (dayLabel)
+                {
+                    // Don't do this! It generates garbage (will eventually invoke Garbage Collect)
+                    //dayLabel.text="Days: " + currentDay.ToString();
 
-                // Do this instead
-                dayLabel.SetText("Days: {0}", currentDay);                
+                    // Do this instead
+                    dayLabel.SetText("Days: {0}", currentDay);                
+                }
+
+                dayPassedEvent.Invoke(); //make announcement to all listeners
             }
-
-            dayPassedEvent.Invoke(); //make announcement to all listeners
         }
 
         public void UpdateVisuals()
@@ -70,3 +91,4 @@ namespace Environment
         }
     }
 }
+
