@@ -14,7 +14,7 @@ public class StoreButtons : MonoBehaviour
 
     public void OnBuySeedClicked()
     {
-        GameManager.Instance.BuySeedFromStore();
+        GameManager.Instance.BuySeed(10, 5); // Buy 10 seeds for $5
         Debug.Log("Seeds: " + GameManager.Instance.Seeds);
         Debug.Log("Funds: " + GameManager.Instance.Funds);
         UpdateUI();

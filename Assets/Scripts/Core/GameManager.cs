@@ -19,7 +19,7 @@ namespace Core
         private int funds;
        
        //Awake Singleton
-       private void Awake()
+       private void Start()
         {
             if (Instance != null && Instance != this)
             {
@@ -51,6 +51,11 @@ namespace Core
                 OnFundsChanged?.Invoke(funds);
             }
         }
+        public void AddFunds(int amount)
+        {
+            Funds += amount;
+            Debug.Log("Funds: " + Funds);
+        }
         public event Action<int> OnFundsChanged;
 
         private int seeds;
@@ -61,7 +66,57 @@ namespace Core
                 OnSeedsChanged?.Invoke(seeds);
             }
         }
+        public void AddSeeds(int amount)
+        {
+            Seeds += amount;
+            Debug.Log("Seeds: " + Seeds);
+        }
+        public void BuySeed(int cost, int amount)
+        {
+            if (Funds >= cost)
+            {
+                Funds -= cost;
+                Seeds += amount;
+                Debug.Log("Bought " + amount + " seed(s) for $" + cost);
+            }
+            else
+            {
+                Debug.Log("Not enough funds to buy seed.");
+            }
+        }
         public event Action<int> OnSeedsChanged;
+
+        private int water;
+        public int Water {
+            get { return water; }
+            private set
+            {
+                water = value;
+                OnWaterChanged?.Invoke(funds);
+            }
+        }
+        public void AddWater(int amount)
+        {
+            Water += amount;
+            Debug.Log("Water: " + Water);
+        }
+        public event Action<int> OnWaterChanged;
+        
+        private int plants;
+        public int Plants {
+            get { return plants; }
+            private set
+            {
+                plants = value;
+                OnPlantsChanged?.Invoke(plants);
+            }
+        }
+        public void AddPlants(int amount)
+        {
+            Funds += amount;
+            Debug.Log("Plants: " + Plants);
+        }
+        public event Action<int> OnPlantsChanged;
 
         private FarmTile.Condition[] savedTileStates;
 
@@ -79,68 +134,11 @@ namespace Core
             return savedTileStates;
         }
 
-        public void AddSeeds(int amount)
-        {
-            Seeds += amount;
-            Debug.Log("Seeds: " + Seeds);
-        }
-
         private Image fillImage;
-
-       /* void Start()
-        {
-            if (instance != null && instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }*/
-
-        public void AddFunds(int amount)
-        {
-            Funds += amount;
-            Debug.Log("Funds: " + Funds);
-        }
 
         public void LoadScenebyName(string name)
         {
             SceneManager.LoadScene(name);
-        }
-
-        public void BuySeed(int cost, int amount)
-        {
-            if (Funds >= cost)
-            {
-                Funds -= cost;
-                Seeds += amount;
-                Debug.Log("Bought " + amount + " seed(s) for $" + cost);
-            }
-            else
-            {
-                Debug.Log("Not enough funds to buy seed.");
-            }
-        }
-
-        public void BuySeedFromStore()
-        {
-            BuySeed(10, 5);
-        }
-
-        public void AddWater(int amount)
-        {
-            //added water logic
-            if(Funds >= amount)
-            {
-                Funds-= amount;//Assuming water costs money
-            }
-            else
-            {
-                Debug.Log("Not enough funds to buy water");
-            }
-            
-            Debug.Log("Added " + amount + " units of water.");
         }
     
     //tracking days so that reward is given at separate times-after all tiles are in watered state

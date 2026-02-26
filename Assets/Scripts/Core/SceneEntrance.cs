@@ -12,7 +12,7 @@ public class SceneEntrance : MonoBehaviour
     {
         if (playerInRange)
         {
-            WinCondition wc = FindObjectOfType<WinCondition>();
+            WinCondition wc = FindFirstObjectByType<WinCondition>();
             if (wc != null) wc.SaveTiles();
             GameManager.Instance.LoadScenebyName(sceneName);
         }
