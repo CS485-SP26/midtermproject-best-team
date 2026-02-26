@@ -23,12 +23,12 @@ namespace Environment
 
         public UnityEvent dayPassedEvent = new UnityEvent(); // Invoke() at end of day
 
-        //restore cuurent day from GameManager
+        //restore crurent day from GameManager
         private void Start()
         {
             if (GameManager.Instance != null)
             {
-                //currentDay = GameManager.Instance.CurrentDay;
+                currentDay = GameManager.Instance.CurrentDay;
 
                 //updates label immediately
                 if(dayLabel)
@@ -48,7 +48,7 @@ namespace Environment
             
             if(GameManager.Instance != null)
             {
-                //GameManager.Instance.SetCurrentDay(currentDay);}
+                GameManager.Instance.SetCurrentDay(currentDay);}
             
                 if (dayLabel)
                 {
@@ -61,7 +61,7 @@ namespace Environment
 
                 dayPassedEvent.Invoke(); //make announcement to all listeners
             }
-        }
+        
 
         public void UpdateVisuals()
         {
@@ -91,4 +91,5 @@ namespace Environment
         }
     }
 }
+
 

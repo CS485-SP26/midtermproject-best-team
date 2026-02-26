@@ -32,7 +32,7 @@ namespace Farming
 
         public void OnDayPassed()
         {
-            //GameManager.Instance.SetCurrentDay(dayController.CurrentDay);
+            GameManager.Instance.SetCurrentDay(dayController.CurrentDay);
             IncrementDays(1);
         }
 

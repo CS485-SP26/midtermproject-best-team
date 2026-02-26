@@ -43,6 +43,11 @@ namespace Farming
             {
                 Debug.Log("No saved states found, saved is " + (saved == null ? "null" : saved.Length.ToString()));
             }
+            ///
+            if (GameManager.Instance != null)
+            {
+                   rewardGiven = !GameManager.Instance.CanReceiveReward();
+            }
         }
 
         public void SaveTiles()
@@ -58,8 +63,12 @@ namespace Farming
         {
             if (!rewardGiven && AllTilesWatered())
             {
-                congratsUI.SetActive(true);
-                GameManager.Instance.AddFunds(rewardAmount);
+                if(GameManager.Instance !=null && GameManager.Instance.CanReceiveReward())
+                {
+                    congratsUI.SetActive(true);
+                    GameManager.Instance.AddFunds(rewardAmount);
+                    GameManager.Instance.MarkRewardPaid();
+                }
                 rewardGiven = true;
             }
         }
