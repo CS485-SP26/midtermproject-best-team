@@ -7404,8 +7404,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1173184620}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
-<<<<<<< Updated upstream
-=======
 --- !u!1 &921623835 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 522108047406955401, guid: 746b5ebb2c670f8d49be0d2796dc2874, type: 3}
@@ -7431,7 +7429,6 @@ MonoBehaviour:
   dayPassedEvent:
     m_PersistentCalls:
       m_Calls: []
->>>>>>> Stashed changes
 --- !u!1 &934797989
 GameObject:
   m_ObjectHideFlags: 0
