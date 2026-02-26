@@ -15,11 +15,9 @@ namespace Core
         public int CurrentDay {get; private set;}=1;
         //Will help track when reward was last given 
         public int LastRewardDay {get; private set;}=-1;
-        private static GameManager instance;
-        private int funds;
        
        //Awake Singleton
-       private void Start()
+       private void Awake()
         {
             if (Instance != null && Instance != this)
             {
@@ -29,20 +27,8 @@ namespace Core
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-       /* public static GameManager Instance {
-            get
-            {
-                if (instance == null)
-                {
-                    GameObject go = new GameObject();
-                    instance = go.AddComponent<GameManager>();
-                    DontDestroyOnLoad(go);
-                }
-                return instance;
-            }
-        }*/
 
-      
+        private int funds;
         public int Funds {
             get { return funds; }
             private set
@@ -92,7 +78,7 @@ namespace Core
             private set
             {
                 water = value;
-                OnWaterChanged?.Invoke(funds);
+                OnWaterChanged?.Invoke(water);
             }
         }
         public void AddWater(int amount)
@@ -141,8 +127,8 @@ namespace Core
             SceneManager.LoadScene(name);
         }
     
-    //tracking days so that reward is given at separate times-after all tiles are in watered state
-    public void SetCurrentDay(int day)
+        //tracking days so that reward is given at separate times-after all tiles are in watered state
+        public void SetCurrentDay(int day)
         {
             CurrentDay=day;
 

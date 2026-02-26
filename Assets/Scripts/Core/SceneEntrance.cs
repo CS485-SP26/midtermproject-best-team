@@ -2,28 +2,25 @@ using UnityEngine;
 using Core;
 using Farming;
 
-public class SceneEntrance : MonoBehaviour
+public class SceneEntrance : MonoBehaviour, IInteractable
 {
-    public GameObject enterPrompt;
-    [SerializeField] public string sceneName;
-    private bool playerInRange = false;
+    [SerializeField] private GameObject enterPrompt;
+    [SerializeField] private string sceneName;
 
-    public void EnterScene()
+    public void Interact()
     {
-        if (playerInRange)
-        {
-            WinCondition wc = FindFirstObjectByType<WinCondition>();
-            if (wc != null) wc.SaveTiles();
-            GameManager.Instance.LoadScenebyName(sceneName);
-        }
+        WinCondition wc = FindFirstObjectByType<WinCondition>();
+        if (wc != null) wc.SaveTiles();
+
+        GameManager.Instance.LoadScenebyName(sceneName);
+        enterPrompt.SetActive(false); // optional: hide prompt immediately
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            enterPrompt.SetActive(true);
-            playerInRange = true;
+            enterPrompt.SetActive(true); // show prompt
         }
     }
 
@@ -31,8 +28,7 @@ public class SceneEntrance : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            enterPrompt.SetActive(false);
-            playerInRange = false;
+            enterPrompt.SetActive(false); // hide prompt
         }
     }
 }

@@ -8,14 +8,15 @@ namespace Character
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private TileSelector tileSelector;
-        MovementController moveController;
-        AnimatedController animatedController;
-
         [SerializeField] private ProgressBar wateringBar; // UI bar showing remaining water
         [SerializeField] private float maxWaterAmount = 400f; // total water capacity
         [SerializeField] private float waterPerTile = 20f;   // amount used per watering
 
+        MovementController moveController;
+        AnimatedController animatedController;
+
         private float currentWaterAmount; // starts full
+        private IInteractable currentInteractable;
 
         void Start()
         {
@@ -42,26 +43,16 @@ namespace Character
             moveController.Jump();
         }
 
-        public void OnEnter(InputValue value)
-        {
-            // Check if near any store
-            Collider[] hits = Physics.OverlapSphere(transform.position, 1f); // radius = how close you must be
-            foreach (var hit in hits)
-            {
-                SceneEntrance store = hit.GetComponent<SceneEntrance>();
-                if (store != null)
-                {
-                    store.EnterScene();  // Calls the store's scene change
-                    return;           // Skip farm interaction
-                }
-            }
-
-            // If no store nearby, do nothing (or optionally show a debug)
-            Debug.Log("No store nearby.");
-        }
-
         public void OnInteract(InputValue value)
         {
+            // 1️⃣ Priority: check general interactable trigger (store, NPC, etc.)
+            if (currentInteractable != null)
+            {
+                currentInteractable.Interact();
+                return;
+            }
+
+            // 2️⃣ Fallback: check farm tile selection
             FarmTile tile = tileSelector.GetSelectedTile();
             if (tile == null) return;
 
@@ -103,6 +94,24 @@ namespace Character
             UpdateWaterBar();
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            IInteractable interactable = other.GetComponent<IInteractable>();
+            if (interactable != null)
+            {
+                currentInteractable = interactable;
+            }
+        }
+
+        // Trigger exit: clear interactable when leaving
+        private void OnTriggerExit(Collider other)
+        {
+            IInteractable interactable = other.GetComponent<IInteractable>();
+            if (interactable != null && interactable == currentInteractable)
+            {
+                currentInteractable = null;
+            }
+        }
 
     }
 }
