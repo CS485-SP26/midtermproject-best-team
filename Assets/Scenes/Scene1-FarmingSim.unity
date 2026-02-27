@@ -1711,9 +1711,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 301423018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fafff45ed311413ca4fac94be2d6f5f, type: 3}
+  m_Script: {fileID: 11500000, guid: ae6ed9b50bc034504b67b35d6d054342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  seedsText: {fileID: 301423021}
 --- !u!114 &301423021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3977,7 +3978,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2642984813222608391, guid: 746b5ebb2c670f8d49be0d2796dc2874, type: 3}
   m_PrefabInstance: {fileID: 2877654039566427043}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 921623835}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
