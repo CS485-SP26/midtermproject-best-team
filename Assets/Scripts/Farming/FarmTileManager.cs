@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using Environment;
@@ -9,31 +10,40 @@ namespace Farming
     public class FarmTileManager : MonoBehaviour
     {
         [SerializeField] private GameObject farmTilePrefab;
-        [SerializeField] DayController dayController;
+        [SerializeField] private DayController dayController;
         [SerializeField] private int rows = 4;
         [SerializeField] private int cols = 4;
         [SerializeField] private float tileGap = 0.1f;
+
         private List<FarmTile> tiles = new List<FarmTile>();
 
         void Start()
         {
             Debug.Assert(farmTilePrefab, "FarmTileManager requires a farmTilePrefab");
             Debug.Assert(dayController, "FarmTileManager requires a dayController");
+
+            ValidateGrid();       // Ensure all tiles exist
+            tiles = tiles.OrderBy(t => t.gameObject.name).ToList();
+            LoadTileStates();     // Restore saved states
         }
+
         void OnEnable()
         {
-            dayController.dayPassedEvent.AddListener(this.OnDayPassed);
+            dayController.dayPassedEvent.AddListener(OnDayPassed);
         }
 
         void OnDisable()
         {
-            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);
+            dayController.dayPassedEvent.RemoveListener(OnDayPassed);
         }
 
         public void OnDayPassed()
         {
             GameManager.Instance.SetCurrentDay(dayController.CurrentDay);
             IncrementDays(1);
+
+            // Save tiles automatically at the end of the day
+            SaveTileStates();
         }
 
         public void IncrementDays(int count)
@@ -41,17 +51,48 @@ namespace Farming
             while (count > 0)
             {
                 foreach (FarmTile farmTile in tiles)
-                {
                     farmTile.OnDayPassed();
-                }
                 count--;
             }
         }
 
-        public FarmTile[] GetTiles()
+        public FarmTile[] GetTiles() => tiles.ToArray();
+
+        // ---------------- SAVE/LOAD ----------------
+
+        public void SaveTileStates()
         {
-            return tiles.ToArray();
+            if (tiles == null || tiles.Count == 0) return;
+
+            // Collect tile conditions
+            FarmTile.Condition[] states = new FarmTile.Condition[tiles.Count];
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                states[i] = tiles[i].GetCondition;
+            }
+
+            // Save to GameManager
+            GameManager.Instance.SaveTileStates(states);
+            Debug.Log("FarmTileManager: Saved " + states.Length + " tile states.");
         }
+
+        public void LoadTileStates()
+        {
+            var saved = GameManager.Instance.GetSavedTileStates();
+            if (saved == null || saved.Length != tiles.Count) return;
+
+            // Sort tiles by name to match saved array
+            tiles.Sort((a, b) => string.Compare(a.gameObject.name, b.gameObject.name));
+
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                tiles[i].SetState(saved[i]);
+            }
+
+            Debug.Log("Loaded " + tiles.Count + " tile states successfully.");
+        }
+
+        // ---------------- Grid Management ----------------
 
         void InstantiateTiles()
         {
@@ -63,7 +104,7 @@ namespace Farming
                 for (int r = 0; r < rows; r++)
                 {
                     clone = Instantiate(farmTilePrefab, spawnPos, Quaternion.identity);
-                    clone.name = "Farm Tile " + count++.ToString();
+                    clone.name = "Farm Tile " + count++;
                     spawnPos.x += clone.transform.localScale.x + tileGap;
                     clone.transform.parent = transform;
                     tiles.Add(clone.GetComponent<FarmTile>());
@@ -76,10 +117,7 @@ namespace Farming
         void OnValidate()
         {
             #if UNITY_EDITOR
-            EditorApplication.delayCall += () => {
-                if (this == null) return;
-                ValidateGrid();
-            };
+            EditorApplication.delayCall += () => { if (this != null) ValidateGrid(); };
             #endif
         }
 
@@ -88,12 +126,9 @@ namespace Farming
             if (!farmTilePrefab) return;
             tiles.Clear();
             foreach (Transform child in transform)
-            {
                 if (child.gameObject.TryGetComponent<FarmTile>(out var tile))
-                {
                     tiles.Add(tile);
-                }
-            }
+
             int newCount = rows * cols;
             if (tiles.Count != newCount)
             {

@@ -9,11 +9,15 @@ public class SceneEntrance : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        WinCondition wc = FindFirstObjectByType<WinCondition>();
-        if (wc != null) wc.SaveTiles();
+        // Find the tile manager
+        FarmTileManager manager = FindFirstObjectByType<FarmTileManager>();
+        manager?.SaveTileStates();
 
+        // Load the new scene
         GameManager.Instance.LoadScenebyName(sceneName);
-        enterPrompt.SetActive(false); // optional: hide prompt immediately
+
+        // Hide prompt
+        enterPrompt.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)

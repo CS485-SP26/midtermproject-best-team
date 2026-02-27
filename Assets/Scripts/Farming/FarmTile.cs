@@ -79,6 +79,43 @@ namespace Farming
             daysSinceLastInteraction = 0;
         }
 
+        public void SetState(Condition state)
+        {
+            tileCondition = state;
+
+            switch (state)
+            {
+                case Condition.Grass:
+                    if (plantPrefab != null) plantPrefab.SetActive(false);
+                    UpdateVisual();
+                break;
+
+                case Condition.Tilled:
+                case Condition.Watered:
+                    if (plantPrefab != null) plantPrefab.SetActive(false);
+                    UpdateVisual();
+                break;
+
+                case Condition.Planted:
+                    if (plantPrefab != null)
+                    {
+                        plantPrefab.SetActive(true);
+                        plantPrefab.transform.localScale = plantScale;
+                    }
+                    UpdateVisual();
+                    break;
+
+                case Condition.Grown:
+                    if (plantPrefab != null)
+                    {
+                        plantPrefab.SetActive(true);
+                        plantPrefab.transform.localScale = grownScale;
+                    }
+                    UpdateVisual();
+                    break;
+            }
+        }
+
         public void Till()
         {
             tileCondition = FarmTile.Condition.Tilled;
@@ -133,6 +170,14 @@ namespace Farming
                     break;
 
                 case Condition.Watered:
+                    tileRenderer.material = wateredMaterial;
+                    break;
+
+                case Condition.Planted:
+                    tileRenderer.material = wateredMaterial;
+                    break;
+
+                case Condition.Grown:
                     tileRenderer.material = wateredMaterial;
                     break;
             }
