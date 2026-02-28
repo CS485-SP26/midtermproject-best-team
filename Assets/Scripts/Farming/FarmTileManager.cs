@@ -23,7 +23,6 @@ namespace Farming
             Debug.Assert(dayController, "FarmTileManager requires a dayController");
 
             ValidateGrid();       // Ensure all tiles exist
-            tiles = tiles.OrderBy(t => t.gameObject.name).ToList();
             LoadTileStates();     // Restore saved states
         }
 
@@ -93,9 +92,6 @@ namespace Farming
 
             var saved = GameManager.Instance.GetSavedTileStates();
             if (saved == null || saved.Length != tiles.Count) return;
-
-            // Sort tiles by name to match saved array
-            tiles.Sort((a, b) => string.Compare(a.gameObject.name, b.gameObject.name));
 
             for (int i = 0; i < tiles.Count; i++)
             {
