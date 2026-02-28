@@ -26,17 +26,10 @@ namespace Farming
 
             // Check if reward was already given today
             if (GameManager.Instance != null)
-<<<<<<< HEAD
                 rewardGiven = !GameManager.Instance.CanReceiveReward();
 
             // Restore saved tile states when returning from store
             RestoreTileStates();
-=======
-            {
-               // rewardGiven = !GameManager.Instance.CanReceiveReward();
-            rewardGiven  = GameManager.Instance.HasRecievedReward;
-            }
->>>>>>> 273fdbef3fabf026015ec4a076e2e90be3ce0798
         }
 
         void Update()

@@ -1505,12 +1505,8 @@ RectTransform:
   - {fileID: 1743503561}
   - {fileID: 1362925194}
   - {fileID: 108210675}
-<<<<<<< HEAD
   - {fileID: 560980807}
   - {fileID: 1742396168}
-=======
-  - {fileID: 1172227743}
->>>>>>> 273fdbef3fabf026015ec4a076e2e90be3ce0798
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1530,15 +1526,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 656a78d43f94840dda4b802dbd7f6d29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-<<<<<<< HEAD
   seedsText: {fileID: 1006398829}
   fundsText: {fileID: 1058747902}
   harvestedPlantsText: {fileID: 1742396170}
   sellPlantsButton: {fileID: 560980803}
-=======
-  seedsText: {fileID: 0}
-  fundsText: {fileID: 0}
->>>>>>> 273fdbef3fabf026015ec4a076e2e90be3ce0798
 --- !u!1 &644770500
 GameObject:
   m_ObjectHideFlags: 0

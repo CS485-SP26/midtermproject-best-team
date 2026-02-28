@@ -15,22 +15,12 @@ namespace Core
         // Uses Awake instead of Start for earlier initialization.
         // ─────────────────────────────────────────────
         [SerializeField] private DayController dayController;
-<<<<<<< HEAD
         public static GameManager Instance { get; private set; }
-
-        private void Awake()
-=======
-        public static GameManager Instance { get; private set;}
-        //Keeps track of the current day 
-        public int CurrentDay {get; private set;}=1;
-        //Will help track when reward was last given 
-        public int LastRewardDay {get; private set;}=-1;
 
         public bool HasRecievedReward {get; private set;} = false;
        
        //Awake Singleton
        private void Awake()
->>>>>>> 273fdbef3fabf026015ec4a076e2e90be3ce0798
         {
             if (Instance != null && Instance != this)
             {
@@ -241,10 +231,8 @@ namespace Core
             SceneManager.LoadScene(name);
         }
 
-<<<<<<< HEAD
         private Image fillImage;
-=======
-        }
+    
         //tracks if player can receive reward at current day if it was not already given
 
         public bool CanReceiveReward()
@@ -258,6 +246,6 @@ namespace Core
             HasRecievedReward = true;
         }
     
->>>>>>> 273fdbef3fabf026015ec4a076e2e90be3ce0798
     }
 }
+
