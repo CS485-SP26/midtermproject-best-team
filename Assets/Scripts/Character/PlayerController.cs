@@ -37,12 +37,14 @@ namespace Character
 
         public void OnInteract(InputValue value)
         {
+            // 1️⃣ Priority: check general interactable trigger (store, NPC, etc.)
             if (currentInteractable != null)
             {
                 currentInteractable.Interact();
                 return;
             }
 
+            // 2️⃣ Fallback: check farm tile selection
             FarmTile tile = tileSelector.GetSelectedTile();
             if (tile == null) return;
 
