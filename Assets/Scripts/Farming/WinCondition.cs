@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Farming;
 using Core;
 using System.Linq;
@@ -23,11 +24,12 @@ namespace Farming
 
             congratsUI.SetActive(false);
 
-            // Check if the reward was already given from previous sessions
+            // Check if reward was already given today
             if (GameManager.Instance != null)
-            {
                 rewardGiven = !GameManager.Instance.CanReceiveReward();
-            }
+
+            // Restore saved tile states when returning from store
+            RestoreTileStates();
         }
 
         void Update()
@@ -39,6 +41,7 @@ namespace Farming
             }
         }
 
+        // Checks if all tiles are in an active growing state
         private bool AllTilesWatered()
         {
             var tiles = tileManager.GetTiles();
@@ -49,15 +52,41 @@ namespace Farming
             );
         }
 
+        // Gives the player a reward and marks it as paid for today
         private void GiveReward()
         {
             if (GameManager.Instance == null) return;
-
             congratsUI.SetActive(true);
             GameManager.Instance.AddFunds(rewardAmount);
             GameManager.Instance.MarkRewardPaid();
-
             Debug.Log("All tiles watered! Reward granted: " + rewardAmount);
+        }
+
+        // Saves all tile states before leaving the scene
+        public void SaveTiles()
+        {
+            var tiles = tileManager.GetTiles();
+            var states = tiles.Select(t => t.GetCondition).ToArray();
+            GameManager.Instance.SaveTileStates(states);
+            Debug.Log("Saved " + states.Length + " tile states.");
+        }
+
+        // Restores tile states when returning from the store
+        private void RestoreTileStates()
+        {
+            if (GameManager.Instance == null) return;
+
+            var saved = GameManager.Instance.GetSavedTileStates();
+            var tiles = tileManager.GetTiles();
+
+            if (saved == null || saved.Length != tiles.Length) return;
+
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                tiles[i].SetState(saved[i]);
+            }
+
+            Debug.Log("Restored " + tiles.Length + " tile states.");
         }
     }
 }

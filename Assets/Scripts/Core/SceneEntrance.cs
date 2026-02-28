@@ -1,7 +1,6 @@
 using UnityEngine;
 using Core;
 using Farming;
-
 public class SceneEntrance : MonoBehaviour, IInteractable
 {
     [SerializeField] private GameObject enterPrompt;
@@ -9,14 +8,9 @@ public class SceneEntrance : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        // Find the tile manager
         FarmTileManager manager = FindFirstObjectByType<FarmTileManager>();
         manager?.SaveTileStates();
-
-        // Load the new scene
         GameManager.Instance.LoadScenebyName(sceneName);
-
-        // Hide prompt
         enterPrompt.SetActive(false);
     }
 
@@ -24,7 +18,7 @@ public class SceneEntrance : MonoBehaviour, IInteractable
     {
         if (other.CompareTag("Player"))
         {
-            enterPrompt.SetActive(true); // show prompt
+            enterPrompt.SetActive(true);
         }
     }
 
@@ -32,7 +26,7 @@ public class SceneEntrance : MonoBehaviour, IInteractable
     {
         if (other.CompareTag("Player"))
         {
-            enterPrompt.SetActive(false); // hide prompt
+            enterPrompt.SetActive(false);
         }
     }
 }

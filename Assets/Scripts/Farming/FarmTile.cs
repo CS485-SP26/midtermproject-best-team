@@ -7,7 +7,7 @@ namespace Farming
 {
     public class FarmTile : MonoBehaviour
     {
-        public enum Condition { Grass, Tilled, Watered, Planted, Grown }
+        public enum Condition { Grass, Tilled, Watered, Planted, Grown, Withered }
         [SerializeField] private Condition tileCondition = Condition.Grass;
         [SerializeField] private FarmTileManager manager;
 
@@ -15,6 +15,7 @@ namespace Farming
         [SerializeField] private Material grassMaterial;
         [SerializeField] private Material tilledMaterial;
         [SerializeField] private Material wateredMaterial;
+        [SerializeField] private Material witheredMaterial;
 
         [Header("Plant")]
         [SerializeField] private GameObject plantPrefab;
@@ -30,6 +31,7 @@ namespace Farming
 
         List<Material> materials = new List<Material>();
         private int daysSinceLastInteraction = 0;
+        private int daysGrown = 0;
 
         public FarmTile.Condition GetCondition { get { return tileCondition; } }
 
@@ -43,11 +45,8 @@ namespace Farming
                 materials.Add(edge.gameObject.GetComponent<MeshRenderer>().material);
             }
 
-            // Hide Plant
             if (plantPrefab != null)
-            {
                 plantPrefab.SetActive(false);
-            }
         }
 
         public void Interact()
@@ -59,8 +58,8 @@ namespace Farming
                     break;
 
                 case Condition.Tilled:
-                Debug.Log("Tile interacted in Tilled state. GM is " +
-                (GameManager.Instance == null ? "NULL" : "NOT NULL"));
+                    Debug.Log("Tile interacted in Tilled state. GM is " +
+                        (GameManager.Instance == null ? "NULL" : "NOT NULL"));
                     Water();
                     if (GameManager.Instance != null)
                     {
@@ -74,15 +73,35 @@ namespace Farming
                     break;
 
                 case Condition.Planted:
-                    Debug.Log("Plant already planted.");
+                    Debug.Log("Plant is growing. Wait for it to grow.");
                     break;
 
                 case Condition.Grown:
-                    Debug.Log("Plant fully grown!");
+                    Debug.Log("Plant fully grown! Press Harvest to harvest.");
+                    break;
+
+                case Condition.Withered:
+                    // Tilling a withered plant clears it back to soil
+                    Till();
+                    Debug.Log("Tilled withered plant back to soil.");
                     break;
             }
 
             daysSinceLastInteraction = 0;
+        }
+
+        // Called by HarvestButton when player harvests a grown plant
+        public void Harvest()
+        {
+            if (tileCondition != Condition.Grown) return;
+            Debug.Log("Harvested plant!");
+            GameManager.Instance.AddHarvestedPlants(1);
+            if (plantPrefab != null)
+                plantPrefab.SetActive(false);
+            // Reset tile back to tilled after harvesting
+            tileCondition = Condition.Tilled;
+            daysGrown = 0;
+            UpdateVisual();
         }
 
         public void SetState(Condition state)
@@ -92,15 +111,11 @@ namespace Farming
             switch (state)
             {
                 case Condition.Grass:
-                    if (plantPrefab != null) plantPrefab.SetActive(false);
-                    UpdateVisual();
-                break;
-
                 case Condition.Tilled:
                 case Condition.Watered:
                     if (plantPrefab != null) plantPrefab.SetActive(false);
                     UpdateVisual();
-                break;
+                    break;
 
                 case Condition.Planted:
                     if (plantPrefab != null)
@@ -119,6 +134,12 @@ namespace Farming
                     }
                     UpdateVisual();
                     break;
+
+                case Condition.Withered:
+                    if (plantPrefab != null)
+                        plantPrefab.SetActive(false);
+                    UpdateVisual();
+                    break;
             }
         }
 
@@ -127,6 +148,8 @@ namespace Farming
             tileCondition = FarmTile.Condition.Tilled;
             if (tileRenderer == null)
                 tileRenderer = GetComponent<MeshRenderer>();
+            if (plantPrefab != null)
+                plantPrefab.SetActive(false);
             UpdateVisual();
             tillAudio?.Play();
         }
@@ -136,29 +159,37 @@ namespace Farming
             tileCondition = FarmTile.Condition.Watered;
             if (tileRenderer == null)
                 tileRenderer = GetComponent<MeshRenderer>();
+            daysSinceLastInteraction = 0;
             UpdateVisual();
             waterAudio?.Play();
         }
 
         public void Plant()
         {
-            if (plantPrefab == null)
-                return;
-
+            if (plantPrefab == null) return;
             Debug.Log("Planted");
             tileCondition = Condition.Planted;
             plantPrefab.SetActive(true);
             plantPrefab.transform.localScale = plantScale;
+            daysSinceLastInteraction = 0;
         }
 
         private void Grow()
         {
-            if (plantPrefab == null)
-                return;
-
+            if (plantPrefab == null) return;
             Debug.Log("Plant grown");
             tileCondition = Condition.Grown;
             plantPrefab.transform.localScale = grownScale;
+            daysGrown = 0;
+        }
+
+        private void Wither()
+        {
+            Debug.Log("Plant withered!");
+            tileCondition = Condition.Withered;
+            if (plantPrefab != null)
+                plantPrefab.SetActive(false);
+            UpdateVisual();
         }
 
         private void UpdateVisual()
@@ -170,21 +201,21 @@ namespace Farming
                 case Condition.Grass:
                     tileRenderer.material = grassMaterial;
                     break;
-
                 case Condition.Tilled:
                     tileRenderer.material = tilledMaterial;
                     break;
-
                 case Condition.Watered:
                     tileRenderer.material = wateredMaterial;
                     break;
-
                 case Condition.Planted:
                     tileRenderer.material = wateredMaterial;
                     break;
-
                 case Condition.Grown:
                     tileRenderer.material = wateredMaterial;
+                    break;
+                case Condition.Withered:
+                    // Use withered material if assigned, otherwise fall back to grass
+                    tileRenderer.material = witheredMaterial != null ? witheredMaterial : grassMaterial;
                     break;
             }
         }
@@ -194,13 +225,9 @@ namespace Farming
             foreach (Material m in materials)
             {
                 if (active)
-                {
                     m.EnableKeyword("_EMISSION");
-                }
                 else
-                {
                     m.DisableKeyword("_EMISSION");
-                }
             }
             if (active) stepAudio.Play();
         }
@@ -209,20 +236,33 @@ namespace Farming
         {
             daysSinceLastInteraction++;
 
-            if (tileCondition == Condition.Planted && daysSinceLastInteraction >= 2)
+            switch (tileCondition)
             {
-                Grow();
-            }
+                case Condition.Planted:
+                    // Wither if not watered within 2 days
+                    if (daysSinceLastInteraction >= 2)
+                        Wither();
+                    else
+                        Grow();
+                    break;
 
-            else if (daysSinceLastInteraction >= 2)
-            {
-                if (tileCondition == Condition.Watered)
+                case Condition.Grown:
+                    // Wither if not harvested within 2 days of growing
+                    daysGrown++;
+                    if (daysGrown >= 2)
+                        Wither();
+                    break;
+
+                case Condition.Watered:
                     tileCondition = Condition.Tilled;
-                else if (tileCondition == Condition.Tilled)
-                    tileCondition = Condition.Grass;
-            }
+                    UpdateVisual();
+                    break;
 
-            UpdateVisual();
+                case Condition.Tilled:
+                    tileCondition = Condition.Grass;
+                    UpdateVisual();
+                    break;
+            }
         }
     }
 }
