@@ -1,81 +1,117 @@
 using Character;
 using UnityEngine;
-
+using Core;
 
 namespace Farming
 {
-
-    [RequireComponent(typeof(AnimatedController))] // AnimatedController is required and we don't store a reference
+    [RequireComponent(typeof(AnimatedController))]
     public class Farmer : MonoBehaviour
     {
-
-        [SerializeField] private GameObject waterCan; // Reference to the watering can GameObject
-
-        [SerializeField] private GameObject gardenHoe; // Reference to the hoe GameObject
+        [SerializeField] private GameObject waterCan;
+        [SerializeField] private GameObject gardenHoe;
 
         [SerializeField] private ProgressBar waterLevelUI;
- 
-        [SerializeField] private float waterLevel = 1.000f;
 
-        [SerializeField] private float waterPerUse  = 0.100f;
 
-        AnimatedController animatedController;
+        [SerializeField] private int maxWater = 10;
+
+        private AnimatedController animatedController;
 
         void Start()
         {
+            Debug.Assert(waterCan, "Missing watering can reference.");
+            Debug.Assert(gardenHoe, "Missing hoe reference.");
+            Debug.Assert(waterLevelUI, "Missing water UI reference.");
 
-            Debug.Assert(waterCan, "Farmer requires a reference to the watering can GameObject.");
-            Debug.Assert(gardenHoe, "Farmer requires a reference to the hoe GameObject.");
-            Debug.Assert(waterLevelUI, "Farmer requires a reference to the water level UI.");
-            
-            SetTool("None"); // start with no tool active
             animatedController = GetComponent<AnimatedController>();
 
+            SetTool("None");
+
             waterLevelUI.SetText("Water Level");
-            waterLevelUI.Fill = waterLevel;
 
+            // Subscribe to GameManager water updates
+            GameManager.Instance.OnWaterChanged += UpdateWaterUI;
+
+            // Initialize UI with current water
+            UpdateWaterUI(GameManager.Instance.Water);
         }
-        public void SetTool(string tool)
-            {
-                waterCan.SetActive(false);
-                gardenHoe.SetActive(false);
 
-                switch (tool)
-                {
-                    case "WateringCan":
-                        waterCan.SetActive(true);
-                        break;
-                    case "GardenHoe":
-                        gardenHoe.SetActive(true);
-                        break;
-                }
+        private void OnDestroy()
+        {
+            if (GameManager.Instance != null)
+                GameManager.Instance.OnWaterChanged -= UpdateWaterUI;
+        }
+
+        private void UpdateWaterUI(int currentWater)
+        {
+            waterLevelUI.Fill = (float)currentWater / maxWater;
+        }
+
+        public void SetTool(string tool)
+        {
+            waterCan.SetActive(false);
+            gardenHoe.SetActive(false);
+
+            switch (tool)
+            {
+                case "WateringCan":
+                    waterCan.SetActive(true);
+                    break;
+                case "GardenHoe":
+                    gardenHoe.SetActive(true);
+                    break;
             }
+        }
+
         public void TryTileInteraction(FarmTile tile)
         {
-            if (tile == null) return; // No tile selected, do nothing
-        
+            if (tile == null) return;
+
             switch (tile.GetCondition)
             {
-                case FarmTile.Condition.Grass: 
-                    animatedController.SetTrigger("Till"); 
-                    tile.Interact(); // updates the condition, play the anim after
+                case FarmTile.Condition.Grass:
+                    // Turn Grass → Tilled
+                    animatedController.SetTrigger("Till");
+                    tile.Interact();
                     break;
-                case FarmTile.Condition.Tilled: 
-                    if (waterLevel >= waterPerUse)
-                    {
-                    animatedController.SetTrigger("Water"); 
-                    tile.Interact(); // updates the condition, play the anim after
-                    waterLevel -= waterPerUse;
-                    waterLevelUI.Fill = waterLevel;
 
-                    Debug.Log($"Water used. New water level: {waterLevel}");
+                case FarmTile.Condition.Tilled:
+                    // Water the tilled soil
+                    if (GameManager.Instance.Water >= 1)
+                    {
+                        animatedController.SetTrigger("Water");
+                        tile.Interact();
+                        GameManager.Instance.AddWater(-1);
+                    }
+                    else
+                    {
+                        Debug.Log("Not enough water to water the tilled soil");
                     }
                     break;
-                
-                default: 
-                break;
+
+                case FarmTile.Condition.Watered:
+                    // Plant seeds if available
+                    if (GameManager.Instance.Seeds > 0)
+                    {
+                        animatedController.SetTrigger("Plant");
+                        tile.Interact();
+                        GameManager.Instance.AddSeeds(-1);
+                    }
+                    else
+                    {
+                        Debug.Log("No seeds available to plant");
+                    }
+                    break;
+
+                case FarmTile.Condition.Planted:
+                    Debug.Log("Plant is growing. Wait 2 days to harvest.");
+                    break;
+
+                case FarmTile.Condition.Grown:
+                    // Optionally harvest
+                    Debug.Log("Plant fully grown.");
+                    break;
             }
         }
-    
     }
 }

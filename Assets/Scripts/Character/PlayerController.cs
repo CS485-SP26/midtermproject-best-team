@@ -8,14 +8,9 @@ namespace Character
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private TileSelector tileSelector;
-        [SerializeField] private ProgressBar wateringBar; // UI bar showing remaining water
-        [SerializeField] private float maxWaterAmount = 400f; // total water capacity
-        [SerializeField] private float waterPerTile = 20f;   // amount used per watering
 
         MovementController moveController;
         AnimatedController animatedController;
-
-        private float currentWaterAmount; // starts full
         private IInteractable currentInteractable;
 
         void Start()
@@ -27,11 +22,8 @@ namespace Character
             Debug.Assert(animatedController, "PlayerController requires an animatedController");
             Debug.Assert(moveController, "PlayerController requires a MovementController");
             Debug.Assert(tileSelector, "PlayerController requires a TileSelector.");
-
-            // Start full
-            currentWaterAmount = maxWaterAmount;
-            UpdateWaterBar();
         }
+
         public void OnMove(InputValue inputValue)
         {
             Vector2 inputVector = inputValue.Get<Vector2>();
@@ -54,42 +46,12 @@ namespace Character
             FarmTile tile = tileSelector.GetSelectedTile();
             if (tile == null) return;
 
-            switch (tile.GetCondition)
+            // Delegate tile interaction to Farmer
+            Farmer farmer = GetComponent<Farmer>();
+            if (farmer != null)
             {
-                case FarmTile.Condition.Grass:
-                    tile.Interact(); // Grass → Tilled
-                    animatedController.SetTrigger("Till");
-                    break;
-
-                case FarmTile.Condition.Tilled:
-                    if (currentWaterAmount >= waterPerTile)
-                    {
-                        tile.Interact(); // Tilled → Watered
-                        animatedController.SetTrigger("Water");
-                        currentWaterAmount -= waterPerTile;
-                        UpdateWaterBar();
-                    }
-                    else
-                    {
-                        Debug.Log("Not enough water!");
-                    }
-                    break;
-
-                case FarmTile.Condition.Watered:
-                    tile.Interact();
-                    break;
+                farmer.TryTileInteraction(tile);
             }
-        }
-
-        private void UpdateWaterBar()
-        {
-            wateringBar.SetProgress(currentWaterAmount / maxWaterAmount);
-        }
-
-        public void RefillWater(float amount)
-        {
-            currentWaterAmount = Mathf.Min(currentWaterAmount + amount, maxWaterAmount);
-            UpdateWaterBar();
         }
 
         private void OnTriggerEnter(Collider other)
