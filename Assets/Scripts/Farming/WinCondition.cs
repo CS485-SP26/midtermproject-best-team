@@ -26,7 +26,8 @@ namespace Farming
             // Check if the reward was already given from previous sessions
             if (GameManager.Instance != null)
             {
-                rewardGiven = !GameManager.Instance.CanReceiveReward();
+               // rewardGiven = !GameManager.Instance.CanReceiveReward();
+            rewardGiven  = GameManager.Instance.HasRecievedReward;
             }
         }
 

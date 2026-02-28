@@ -15,6 +15,8 @@ namespace Core
         public int CurrentDay {get; private set;}=1;
         //Will help track when reward was last given 
         public int LastRewardDay {get; private set;}=-1;
+
+        public bool HasRecievedReward {get; private set;} = false;
        
        //Awake Singleton
        private void Awake()
@@ -141,7 +143,7 @@ namespace Core
         //was the reward paid today
         public void MarkRewardPaid()
         {
-            LastRewardDay=CurrentDay;
+            HasRecievedReward = true;
         }
     
     }
