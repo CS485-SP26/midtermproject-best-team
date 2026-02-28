@@ -37,14 +37,12 @@ namespace Character
 
         public void OnInteract(InputValue value)
         {
-            // Interact with general interactables (NPC, store, etc.)
             if (currentInteractable != null)
             {
                 currentInteractable.Interact();
                 return;
             }
 
-            // Interact with selected farm tile
             FarmTile tile = tileSelector.GetSelectedTile();
             if (tile == null) return;
 
