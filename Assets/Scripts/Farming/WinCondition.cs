@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Linq;
 using Farming;
 using Core;
+using System.Linq;
 
 namespace Farming
 {
@@ -13,49 +12,21 @@ namespace Farming
         [SerializeField] private int rewardAmount = 50;
 
         private bool rewardGiven = false;
-        private FarmTile[] tiles;
 
         void Start()
         {
-            tiles = GetComponentsInChildren<FarmTile>()
-                .OrderBy(t => t.gameObject.name)
-                .ToArray();
-            Debug.Log("Found " + tiles.Length + " tiles");
+            if (!tileManager)
+            {
+                Debug.LogError("WinCondition requires a reference to FarmTileManager.");
+                return;
+            }
+
             congratsUI.SetActive(false);
 
-            var saved = GameManager.Instance.GetSavedTileStates();
-            if (saved != null && saved.Length == tiles.Length)
-            {
-                int wateredCount = 0;
-                for (int i = 0; i < tiles.Length; i++)
-                {
-                    if (saved[i] == FarmTile.Condition.Watered)
-                    {
-                        tiles[i].Water();
-                        wateredCount++;
-                    }
-                    else if (saved[i] == FarmTile.Condition.Tilled)
-                        tiles[i].Till();
-                }
-                Debug.Log("Restored " + wateredCount + " watered tiles");
-            }
-            else
-            {
-                Debug.Log("No saved states found, saved is " + (saved == null ? "null" : saved.Length.ToString()));
-            }
-            ///
+            // Check if the reward was already given from previous sessions
             if (GameManager.Instance != null)
             {
-                   rewardGiven = !GameManager.Instance.CanReceiveReward();
-            }
-        }
-
-        public void SaveTiles()
-        {
-            if (tiles != null)
-            {
-                Debug.Log("Explicitly saving " + tiles.Length + " tiles");
-                GameManager.Instance.SaveTileStates(tiles);
+                rewardGiven = !GameManager.Instance.CanReceiveReward();
             }
         }
 
@@ -63,24 +34,30 @@ namespace Farming
         {
             if (!rewardGiven && AllTilesWatered())
             {
-                if(GameManager.Instance !=null && GameManager.Instance.CanReceiveReward())
-                {
-                    congratsUI.SetActive(true);
-                    GameManager.Instance.AddFunds(rewardAmount);
-                    GameManager.Instance.MarkRewardPaid();
-                }
+                GiveReward();
                 rewardGiven = true;
             }
         }
 
         private bool AllTilesWatered()
         {
-            foreach (FarmTile tile in tiles)
-            {
-                if (tile.GetCondition != FarmTile.Condition.Watered)
-                    return false;
-            }
-            return tiles.Length > 0;
+            var tiles = tileManager.GetTiles();
+            return tiles.Length > 0 && tiles.All(tile =>
+                tile.GetCondition == FarmTile.Condition.Watered ||
+                tile.GetCondition == FarmTile.Condition.Planted ||
+                tile.GetCondition == FarmTile.Condition.Grown
+            );
+        }
+
+        private void GiveReward()
+        {
+            if (GameManager.Instance == null) return;
+
+            congratsUI.SetActive(true);
+            GameManager.Instance.AddFunds(rewardAmount);
+            GameManager.Instance.MarkRewardPaid();
+
+            Debug.Log("All tiles watered! Reward granted: " + rewardAmount);
         }
     }
 }

@@ -106,13 +106,11 @@ namespace Core
 
         private FarmTile.Condition[] savedTileStates;
 
-        public void SaveTileStates(FarmTile[] tiles)
+        public void SaveTileStates(FarmTile.Condition[] states)
         {
-            savedTileStates = new FarmTile.Condition[tiles.Length];
-            for (int i = 0; i < tiles.Length; i++)
-            {
-                savedTileStates[i] = tiles[i].GetCondition;
-            }
+            savedTileStates = new FarmTile.Condition[states.Length];
+            Array.Copy(states, savedTileStates, states.Length);
+            Debug.Log("GameManager: Saved " + states.Length + " tile states.");
         }
 
         public FarmTile.Condition[] GetSavedTileStates()

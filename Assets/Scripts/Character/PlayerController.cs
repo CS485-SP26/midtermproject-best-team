@@ -78,7 +78,7 @@ namespace Character
                     break;
 
                 case FarmTile.Condition.Watered:
-                    Debug.Log("Tile already watered!");
+                    tile.Interact();
                     break;
             }
         }
