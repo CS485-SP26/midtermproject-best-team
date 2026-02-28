@@ -8,8 +8,12 @@ public class FundsDisplay : MonoBehaviour
 
     void OnEnable()
     {
+        if(GameManager.Instance != null)
+        {
         GameManager.Instance.OnFundsChanged += UpdateFundsUI;
-        UpdateFundsUI(GameManager.Instance.Funds);
+        UpdateFundsUI(GameManager.Instance.Funds);   
+        }
+        
     }
 
     void OnDisable()

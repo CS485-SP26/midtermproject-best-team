@@ -59,8 +59,14 @@ namespace Farming
                     break;
 
                 case Condition.Tilled:
+                Debug.Log("Tile interacted in Tilled state. GM is " +
+                (GameManager.Instance == null ? "NULL" : "NOT NULL"));
                     Water();
-                    GameManager.Instance.AddFunds(10);
+                    if (GameManager.Instance != null)
+                    {
+                        GameManager.Instance.AddFunds(10);
+                        Debug.Log("Funds added from FarmTile");
+                    }
                     break;
 
                 case Condition.Watered:

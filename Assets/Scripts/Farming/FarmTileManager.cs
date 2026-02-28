@@ -39,7 +39,10 @@ namespace Farming
 
         public void OnDayPassed()
         {
-            GameManager.Instance.SetCurrentDay(dayController.CurrentDay);
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetCurrentDay(dayController.CurrentDay);
+            }
             IncrementDays(1);
 
             // Save tiles automatically at the end of the day
@@ -72,12 +75,22 @@ namespace Farming
             }
 
             // Save to GameManager
-            GameManager.Instance.SaveTileStates(states);
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SaveTileStates(states);
+            }
             Debug.Log("FarmTileManager: Saved " + states.Length + " tile states.");
         }
 
         public void LoadTileStates()
         {
+
+            if (GameManager.Instance == null)
+            {
+            Debug.LogWarning("FarmTileManager: GameManager.Instance is null in LoadTileStates");
+            return;
+            }
+
             var saved = GameManager.Instance.GetSavedTileStates();
             if (saved == null || saved.Length != tiles.Count) return;
 

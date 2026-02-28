@@ -10,9 +10,13 @@ public class SeedDisplay : MonoBehaviour
 
     void OnEnable()
     {
+        if (GameManager.Instance != null)
+        {
         GameManager.Instance.OnSeedsChanged += UpdateSeedsUI;
         UpdateSeedsUI(GameManager.Instance.Seeds);
-
+   
+        }
+        
     }
 
     void OnDisable()
