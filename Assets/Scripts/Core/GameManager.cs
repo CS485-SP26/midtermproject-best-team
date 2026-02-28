@@ -28,11 +28,6 @@ namespace Core
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            if (water == 0)
-            {
-                Water = 10; // starting water amount
-            }
         }
 
         private int funds;

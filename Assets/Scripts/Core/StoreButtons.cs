@@ -27,16 +27,10 @@ public class StoreButtons : MonoBehaviour
 
     public void OnRefillWaterClicked()
     {
-        int refillAmount = 10; // How much water to give per refill
         if (GameManager.Instance.Funds >= 30)
         {
-            GameManager.Instance.AddFunds(-30); // Deduct money
-
-            // Refill water but do not exceed MaxWater
-            int newWater = Mathf.Min(GameManager.Instance.Water + refillAmount, 10);
-            GameManager.Instance.AddWater(newWater - GameManager.Instance.Water); // Add only the difference
-
-            Debug.Log("Water refilled! Current water: " + GameManager.Instance.Water);
+            GameManager.Instance.AddFunds(-30);
+            Debug.Log("Water refilled!");
             UpdateUI();
         }
         else
