@@ -1910,7 +1910,8 @@ MonoBehaviour:
   waterCan: {fileID: 1701082167588340510}
   gardenHoe: {fileID: 1660072129}
   waterLevelUI: {fileID: 1080329741}
-  maxWater: 10
+  waterLevel: 1
+  waterPerUse: 0.1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3416,7 +3417,6 @@ GameObject:
   - component: {fileID: 1968053980}
   - component: {fileID: 1968053982}
   - component: {fileID: 1968053981}
-  - component: {fileID: 1968053983}
   m_Layer: 5
   m_Name: Congrats!! All tiles have been watered!
   m_TagString: Untagged
@@ -3545,21 +3545,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1968053979}
   m_CullTransparentMesh: 1
---- !u!114 &1968053983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968053979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73d1271482fc34406ad9687e855eca47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileManager: {fileID: 6978769899267434976}
-  congratsUI: {fileID: 1968053979}
-  rewardAmount: 50
 --- !u!4 &1995625115 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 239207153270792379, guid: ecace955e83a94ae7a469a029e3559af, type: 3}
@@ -4328,12 +4313,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 525938379}
     - target: {fileID: 7733873333787894334, guid: ecace955e83a94ae7a469a029e3559af, type: 3}
+      propertyPath: manager
+      value: 
+      objectReference: {fileID: 6978769899267434976}
+    - target: {fileID: 7733873333787894334, guid: ecace955e83a94ae7a469a029e3559af, type: 3}
       propertyPath: witheredMaterial
       value: 
       objectReference: {fileID: 2100000, guid: 053fa0c86b03be449bd117d80d1eb19c, type: 2}
     - target: {fileID: 7733873333787894334, guid: ecace955e83a94ae7a469a029e3559af, type: 3}
       propertyPath: daysUntilWithered
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7733873333787894334, guid: ecace955e83a94ae7a469a029e3559af, type: 3}
       propertyPath: WitheredPlantPrefab
