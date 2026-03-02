@@ -9,7 +9,7 @@ namespace Farming
 {
     public class FarmTile : MonoBehaviour
     {
-        public enum Condition { Grass, Tilled, Watered, Planted, Grown, Withered }
+        public enum Condition { Grass, Tilled, Watered, Planted, Grown }
         [SerializeField] private Condition tileCondition = Condition.Grass;
         [SerializeField] private FarmTileManager manager;
 
@@ -17,8 +17,6 @@ namespace Farming
         [SerializeField] private Material grassMaterial;
         [SerializeField] private Material tilledMaterial;
         [SerializeField] private Material wateredMaterial;
-
-        [SerializeField] private Material witheredMaterial;
 
         [Header("Plant")]
         [SerializeField] private GameObject plantPrefab;
@@ -55,16 +53,16 @@ namespace Farming
                 materials.Add(edge.gameObject.GetComponent<MeshRenderer>().material);
             }
 
-        if (WitheredPlantPrefab !=null) WitheredPlantPrefab.SetActive(false);
-         if (plantPrefab !=null) plantPrefab.SetActive(false);
-    
-       UpdateVisual();
+            plantPrefab?.SetActive(false);
+            WitheredPlantPrefab?.SetActive(false);
+
+            UpdateVisual();
         }
 
         public void Interact()
         {    
 
-            Condition before = tileCondition;
+            //Condition before = tileCondition;
 
             switch (tileCondition)
             {
@@ -88,37 +86,29 @@ namespace Farming
                     break;
 
                 case Condition.Planted:
-                    Debug.Log("Plant already planted.");
+                    Debug.Log("Plant already planted");
                     break;
 
                 case Condition.Grown:
-                    Debug.Log("Plant fully grown!");
-                    WaterPlant();
-                    break;
-                case Condition.Withered:
+                    Debug.Log("Plant Harvested");
                     Till();
                     break;
             }
         }
 
+        // For loading states for GameManager
         public void SetState(Condition state)
         {
             tileCondition = state;
             switch (state)
             {
                 case Condition.Grass:
-                    if (plantPrefab != null) plantPrefab.SetActive(false);
-                    if(WitheredPlantPrefab != null) WitheredPlantPrefab.SetActive(false);
-                UpdateVisual();
-                break;
-
                 case Condition.Tilled:
                 case Condition.Watered:
-                    if (plantPrefab != null) plantPrefab.SetActive(false);
-                    
-                if(WitheredPlantPrefab != null) WitheredPlantPrefab.SetActive(false);
-                UpdateVisual();
-                break;
+                    plantPrefab?.SetActive(false);
+                    WitheredPlantPrefab?.SetActive(false);
+                    UpdateVisual();
+                    break;
 
                 case Condition.Planted:
                     if (plantPrefab != null)
@@ -127,7 +117,7 @@ namespace Farming
                         plantPrefab.transform.localScale = plantScale;
                     }
 
-                    if(WitheredPlantPrefab != null) WitheredPlantPrefab.SetActive(false);
+                    WitheredPlantPrefab?.SetActive(false);
                     UpdateVisual();
                     break;
 
@@ -139,18 +129,8 @@ namespace Farming
                     }
 
                     daysSinceWatered=0;
-                    if(WitheredPlantPrefab != null) WitheredPlantPrefab.SetActive(false);
+                    WitheredPlantPrefab?.SetActive(false);
 
-                    UpdateVisual();
-                    break;
-
-                case Condition.Withered:
-                if (plantPrefab != null) plantPrefab.SetActive(false);
-
-                if(WitheredPlantPrefab != null)
-                    {
-                        WitheredPlantPrefab.SetActive(true);
-                    }
                     UpdateVisual();
                     break;
             }
@@ -160,8 +140,8 @@ namespace Farming
         {
             tileCondition = FarmTile.Condition.Tilled;
 
-            if (plantPrefab != null) plantPrefab.SetActive(false);
-            if (WitheredPlantPrefab != null) WitheredPlantPrefab.SetActive(false);
+            plantPrefab?.SetActive(false);
+            WitheredPlantPrefab?.SetActive(false);
 
             if (tileRenderer == null)
                 tileRenderer = GetComponent<MeshRenderer>();
@@ -174,6 +154,8 @@ namespace Farming
         {
             tileCondition = FarmTile.Condition.Watered;
             daysSinceLastInteraction = 0;
+
+            WitheredPlantPrefab?.SetActive(false);
          
             if (tileRenderer == null)
              tileRenderer = GetComponent<MeshRenderer>();
@@ -204,29 +186,16 @@ namespace Farming
             plantPrefab.transform.localScale = grownScale;
 
             daysSinceWatered=0;
-            daysSinceLastInteraction = 0;
         }
 
-       private void WaterPlant()
-        {
-            daysSinceWatered = 0;
-            daysSinceLastInteraction = 0;
-            Debug.Log("Grown plant watered");
-        }
-        private void WitherNow()
+        private void Wither()
         {
 
-            if (witheredMaterial == null)
-            Debug.Log("plant has died");
-            tileCondition = Condition.Withered;
+            tileCondition = FarmTile.Condition.Tilled;
+            UpdateVisual();
 
-            if(plantPrefab != null)
-             plantPrefab.SetActive(false);
-
-            if(WitheredPlantPrefab !=null)
-             WitheredPlantPrefab.SetActive(true);
-
-             UpdateVisual();
+            plantPrefab?.SetActive(false);
+            WitheredPlantPrefab?.SetActive(true);
             
         }
         
@@ -255,10 +224,6 @@ namespace Farming
                 case Condition.Grown:
                     tileRenderer.material = wateredMaterial;
                     break;
-
-                case Condition.Withered:
-                tileRenderer.material = witheredMaterial;
-                break;
             }
         }
 
@@ -287,7 +252,7 @@ namespace Farming
 
                 if (daysSinceWatered >= daysUntilWithered)
                 {
-                    WitherNow();
+                    Wither();
                     return;
                 }
             }

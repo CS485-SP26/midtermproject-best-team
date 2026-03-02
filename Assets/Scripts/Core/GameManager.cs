@@ -106,7 +106,7 @@ namespace Core
         }
         public void AddPlants(int amount)
         {
-            Funds += amount;
+            Plants += amount;
             Debug.Log("Plants: " + Plants);
         }
         public event Action<int> OnPlantsChanged;

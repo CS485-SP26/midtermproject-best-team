@@ -108,8 +108,8 @@ namespace Farming
                     break;
 
                 case FarmTile.Condition.Grown:
-                    // Optionally harvest
-                    Debug.Log("Plant fully grown.");
+                    tile.Interact();
+                    GameManager.Instance.AddPlants(1);
                     break;
             }
         }
