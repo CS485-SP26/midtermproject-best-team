@@ -1,16 +1,20 @@
 using UnityEngine;
 
-namespace Character {
+namespace Character
+{
     [RequireComponent(typeof(Rigidbody))]
     public class MovementController : MonoBehaviour
     {
         [Header("Movement Settings")]
         [SerializeField] protected float acceleration = 20f;
         [SerializeField] protected float maxVelocity = 5f;
+
+        [Header("Camera Reference")]
+        [SerializeField] protected Transform cameraTransform;
+
         protected Rigidbody rb;
         protected Vector2 moveInput;
 
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
         protected virtual void Start()
         {
             rb = GetComponent<Rigidbody>();
@@ -27,26 +31,17 @@ namespace Character {
             moveInput = Vector2.zero;
         }
 
-        public virtual void Jump() { /* NO JUMP SUPPORT */ }
+        public virtual void Jump() { }
 
         public virtual float GetHorizontalSpeedPercent()
         {
-            return moveInput == Vector2.zero ? 0f : 1f;
+            Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            return Mathf.Clamp01(horizontalVelocity.magnitude / maxVelocity);
         }
 
         protected virtual void FixedUpdate()
         {
-            SimpleMovement();
-        }
-
-        void SimpleMovement()
-        {
-            Vector3 movement = Vector3.zero;
-            movement += transform.right * moveInput.x;
-            movement += transform.forward * moveInput.y;
-            movement.Normalize();
-            movement *= Time.deltaTime * acceleration;
-            rb.MovePosition(rb.position + movement);
+            // Overridden in PhysicsMovement
         }
     }
 }
