@@ -9,12 +9,12 @@ namespace Character
         [SerializeField] private Transform playerTarget;
 
         [Header("Settings")]
-        [SerializeField] private float mouseSensitivity = 0.4f;
+        [SerializeField] private float mouseSensitivity = 0.3f;
         [SerializeField] private float distanceFromPlayer = 5f;
         [SerializeField] private float heightOffset = 1.5f;
         [SerializeField] private float minVerticalAngle = -30f;
         [SerializeField] private float maxVerticalAngle = 70f;
-        [SerializeField] private float smoothSpeed = 10f;
+        [SerializeField] private float smoothSpeed = 100f;
 
         private float yaw;
         private float pitch;

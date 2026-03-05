@@ -9,7 +9,6 @@ namespace Core
 {
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private DayController dayController;
         public static GameManager Instance { get; private set;}
         //Keeps track of the current day 
         public int CurrentDay {get; private set;}=1;
