@@ -1,6 +1,7 @@
 using Character;
 using UnityEngine;
 using Core;
+using System.Collections;
 
 namespace Farming
 {
@@ -9,11 +10,11 @@ namespace Farming
     {
         [SerializeField] private GameObject waterCan;
         [SerializeField] private GameObject gardenHoe;
-
         [SerializeField] private ProgressBar waterLevelUI;
-
-
         [SerializeField] private int maxWater = 10;
+
+        // Reference to CelebrationManager to trigger celebrations
+        [SerializeField] private CelebrationManager celebrationManager;
 
         private AnimatedController animatedController;
 
@@ -21,19 +22,39 @@ namespace Farming
         {
             Debug.Assert(waterCan, "Missing watering can reference.");
             Debug.Assert(gardenHoe, "Missing hoe reference.");
-            Debug.Assert(waterLevelUI, "Missing water UI reference.");
-
             animatedController = GetComponent<AnimatedController>();
-
             SetTool("None");
 
-            waterLevelUI.SetText("Water Level");
+            if (waterLevelUI != null)
+                waterLevelUI.SetText("Water Level");
 
-            // Subscribe to GameManager water updates
-            GameManager.Instance.OnWaterChanged += UpdateWaterUI;
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.OnWaterChanged += UpdateWaterUI;
+                UpdateWaterUI(GameManager.Instance.Water);
 
-            // Initialize UI with current water
-            UpdateWaterUI(GameManager.Instance.Water);
+                // Check if a celebration was purchased in the store
+                // and trigger it when returning to the farm
+                if (GameManager.Instance.GetCelebrationPending())
+                {
+                    GameManager.Instance.SetCelebrationPending(false);
+                    if (celebrationManager != null)
+                        StartCoroutine(DelayedCelebration());
+                }
+            }
+            else
+            {
+                Debug.LogError("GameManager.Instance is null in Farmer.Start()");
+            }
+        }
+
+        // Waits half a second before triggering celebration
+        // so the scene is fully loaded first
+        private IEnumerator DelayedCelebration()
+        {
+            yield return new WaitForSeconds(0.5f);
+            if (celebrationManager != null)
+                celebrationManager.TriggerStoreCelebration();
         }
 
         private void OnDestroy()
@@ -44,14 +65,14 @@ namespace Farming
 
         private void UpdateWaterUI(int currentWater)
         {
-            waterLevelUI.Fill = (float)currentWater / maxWater;
+            if (waterLevelUI != null)
+                waterLevelUI.Fill = (float)currentWater / maxWater;
         }
 
         public void SetTool(string tool)
         {
             waterCan.SetActive(false);
             gardenHoe.SetActive(false);
-
             switch (tool)
             {
                 case "WateringCan":
@@ -66,17 +87,14 @@ namespace Farming
         public void TryTileInteraction(FarmTile tile)
         {
             if (tile == null) return;
-
             switch (tile.GetCondition)
             {
                 case FarmTile.Condition.Grass:
-                    // Turn Grass → Tilled
                     animatedController.SetTrigger("Till");
                     tile.Interact();
                     break;
 
                 case FarmTile.Condition.Tilled:
-                    // Water the tilled soil
                     if (GameManager.Instance.Water >= 1)
                     {
                         animatedController.SetTrigger("Water");
@@ -90,7 +108,6 @@ namespace Farming
                     break;
 
                 case FarmTile.Condition.Watered:
-                    // Plant seeds if available
                     if (GameManager.Instance.Seeds > 0)
                     {
                         animatedController.SetTrigger("Plant");
@@ -110,6 +127,7 @@ namespace Farming
                 case FarmTile.Condition.Grown:
                     tile.Interact();
                     GameManager.Instance.AddPlants(1);
+                    Debug.Log("Harvested! Plants: " + GameManager.Instance.Plants);
                     break;
             }
         }
