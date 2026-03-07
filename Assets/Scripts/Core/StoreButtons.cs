@@ -10,6 +10,9 @@ public class StoreButtons : MonoBehaviour
     // Celebration item button to show/hide based on funds
     [SerializeField] private GameObject celebrationItemButton;
 
+    [SerializeField] private ProgressBar waterLevelUI;
+    [SerializeField] private int maxWater = 10;
+
     // Called by Buy Seeds button OnClick
     public void OnBuySeedClicked()
     {
@@ -40,13 +43,18 @@ public class StoreButtons : MonoBehaviour
     // Caps water at max of 10 and deducts $30
     public void OnRefillWaterClicked()
     {
-        int refillAmount = 10;
-        if (GameManager.Instance.Funds >= 30)
+        //int refillAmount = 10;
+        if (GameManager.Instance.Funds >= 30 && GameManager.Instance.Water<10)
         {
             GameManager.Instance.AddFunds(-30);
-            int newWater = Mathf.Min(GameManager.Instance.Water + refillAmount, 10);
-            GameManager.Instance.AddWater(newWater - GameManager.Instance.Water);
+            GameManager.Instance.AddWater(1);
+           // int newWater = Mathf.Min(GameManager.Instance.Water + refillAmount, 10);
+          // GameManager.Instance.AddWater(newWater - GameManager.Instance.Water);
             Debug.Log("Water refilled! Current water: " + GameManager.Instance.Water);
+        }
+        else if (GameManager.Instance.Water >= 10)
+        {
+            Debug.Log("Water already full");
         }
         else
         {
@@ -82,5 +90,25 @@ public class StoreButtons : MonoBehaviour
     void Start()
     {
         UpdateUI();
+
+        if (GameManager.Instance !=null){
+        GameManager.Instance.OnWaterChanged+= UpdateWaterUI;
+
+        UpdateWaterUI(GameManager.Instance.Water);
+        }
     }
+
+    void OnDestroy()
+    {
+        if(GameManager.Instance !=null)
+        GameManager.Instance.OnWaterChanged -= UpdateWaterUI;
+
+    }
+
+    private void UpdateWaterUI(int currentWater)
+    {
+        if (waterLevelUI !=null)
+        waterLevelUI.Fill = (float)currentWater/maxWater;
+    }
+    
 }
