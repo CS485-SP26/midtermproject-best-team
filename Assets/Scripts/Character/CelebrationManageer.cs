@@ -12,10 +12,10 @@ public class CelebrationManager : MonoBehaviour
     // Particle system that plays when a milestone is reached
     [SerializeField] private ParticleSystem celebrationParticles;
 
-    [Header("Audio")]
+    /*[Header("Audio")]
     // Sound that plays during celebration
     private AudioSource audioSource;
-    [SerializeField] private AudioClip celebrationSound;
+    [SerializeField] private AudioClip celebrationSound; */
 
     [Header("UI")]
     // UI element that shows the reward message
@@ -27,9 +27,7 @@ public class CelebrationManager : MonoBehaviour
     private const int MILESTONE_AMOUNT = 200;
 
     void Start()
-
     {
-        audioSource =gameObject.AddComponent<AudioSource>(); 
         // Hide reward UI at start
         if (rewardUI != null)
             rewardUI.SetActive(false);
@@ -81,24 +79,20 @@ public class CelebrationManager : MonoBehaviour
         }
 
         // Play particle effect
-    
-        if (celebrationParticles != null)
+        if (celebrationParticles != null){
+            AudioSource fireworksAudio = celebrationParticles.GetComponent<AudioSource>();
             celebrationParticles.Play();
-
-        // Play celebration sound
-        if (celebrationSound != null){
-            audioSource.clip=celebrationSound;
-            audioSource.loop=true;
-            audioSource.Play();
+            if(fireworksAudio !=null)
+            fireworksAudio.Play();
+            Invoke(nameof(StopFireworks), 6f);
         }
-            Invoke(nameof(StopFireworks), 3f);
 
         // Show reward UI message
         if (rewardUI != null && rewardText != null)
         {
             rewardText.text = message;
             rewardUI.SetActive(true);
-            Invoke(nameof(HideRewardUI), 3f);
+            Invoke(nameof(HideRewardUI), 6f);
         }
         else
         {
@@ -116,12 +110,9 @@ public class CelebrationManager : MonoBehaviour
 //Stops the fireworks after delay
    private void StopFireworks()
     {
-        if (celebrationParticles !=null)
-        celebrationParticles.Stop();
-
-        if(audioSource !=null)
-        audioSource.Stop();
-
-        audioSource.loop=false;
+        if (celebrationParticles !=null){
+    celebrationParticles.Stop();
+    celebrationParticles.GetComponent<AudioSource>().Stop();
+        }   
     }
 }
