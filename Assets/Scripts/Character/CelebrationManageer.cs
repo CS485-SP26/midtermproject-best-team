@@ -14,7 +14,8 @@ public class CelebrationManager : MonoBehaviour
 
     [Header("Audio")]
     // Sound that plays during celebration
-    [SerializeField] private AudioSource celebrationSound;
+    private AudioSource audioSource;
+    [SerializeField] private AudioClip celebrationSound;
 
     [Header("UI")]
     // UI element that shows the reward message
@@ -26,7 +27,9 @@ public class CelebrationManager : MonoBehaviour
     private const int MILESTONE_AMOUNT = 200;
 
     void Start()
+
     {
+        audioSource =gameObject.AddComponent<AudioSource>(); 
         // Hide reward UI at start
         if (rewardUI != null)
             rewardUI.SetActive(false);
@@ -78,12 +81,17 @@ public class CelebrationManager : MonoBehaviour
         }
 
         // Play particle effect
+    
         if (celebrationParticles != null)
             celebrationParticles.Play();
 
         // Play celebration sound
-        if (celebrationSound != null)
-            celebrationSound.Play();
+        if (celebrationSound != null){
+            audioSource.clip=celebrationSound;
+            audioSource.loop=true;
+            audioSource.Play();
+        }
+            Invoke(nameof(StopFireworks), 3f);
 
         // Show reward UI message
         if (rewardUI != null && rewardText != null)
@@ -103,5 +111,17 @@ public class CelebrationManager : MonoBehaviour
     {
         if (rewardUI != null)
             rewardUI.SetActive(false);
+    }
+
+//Stops the fireworks after delay
+   private void StopFireworks()
+    {
+        if (celebrationParticles !=null)
+        celebrationParticles.Stop();
+
+        if(audioSource !=null)
+        audioSource.Stop();
+
+        audioSource.loop=false;
     }
 }
