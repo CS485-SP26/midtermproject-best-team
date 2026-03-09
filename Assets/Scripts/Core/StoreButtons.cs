@@ -44,9 +44,9 @@ public class StoreButtons : MonoBehaviour
     public void OnRefillWaterClicked()
     {
         //int refillAmount = 10;
-        if (GameManager.Instance.Funds >= 30 && GameManager.Instance.Water<10)
+        if (GameManager.Instance.Funds >= 15 && GameManager.Instance.Water<10)
         {
-            GameManager.Instance.AddFunds(-30);
+            GameManager.Instance.AddFunds(-15);
             GameManager.Instance.AddWater(1);
            // int newWater = Mathf.Min(GameManager.Instance.Water + refillAmount, 10);
           // GameManager.Instance.AddWater(newWater - GameManager.Instance.Water);
