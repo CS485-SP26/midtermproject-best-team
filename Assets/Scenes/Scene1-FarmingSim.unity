@@ -56869,6 +56869,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2015955068725829075, guid: 9520bada6c169bd499d4f8d942ca249e, type: 3}
   m_PrefabInstance: {fileID: 83961237}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1174029494
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
+      propertyPath: m_Name
+      value: The Boss@Hip Hop Dancing
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: faf1318b9c89a4ad5a04c530ce0fc85c, type: 3}
 --- !u!1 &1248295909
 GameObject:
   m_ObjectHideFlags: 0
@@ -82642,6 +82699,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: The Boss
       objectReference: {fileID: 0}
+    - target: {fileID: 2775193059344248780, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 3389490147670630041, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.323
@@ -82690,7 +82751,20 @@ PrefabInstance:
       propertyPath: celebrationManager
       value: 
       objectReference: {fileID: 1701082167588340511}
-    m_RemovedComponents: []
+    - target: {fileID: 8232286259598045521, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8784780697780208867, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8784780697780208867, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
+      propertyPath: m_WarningMessage
+      value: 
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 8232286259598045521, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 3389490147670630041, guid: acac770f2249b5fe3850d4ba5edffd19, type: 3}
@@ -83281,6 +83355,7 @@ SceneRoots:
   - {fileID: 697473047}
   - {fileID: 7046584998318956079}
   - {fileID: 1701082167588340508}
+  - {fileID: 1174029494}
   - {fileID: 111998805}
   - {fileID: 2877654039566427043}
   - {fileID: 1832991199}

@@ -1,14 +1,16 @@
-using Character;
 using UnityEngine;
 
 namespace Character {
     public class AnimatedController : MonoBehaviour
     {
-        [SerializeField] float moveSpeed; // useful to observe for debugging
+        [SerializeField] float moveSpeed;
         MovementController moveController;
         Animator animator;
         protected Animator Animator { get { return animator; } }
-        void Start()
+
+        private bool isCelebrating = false;
+
+        void Awake()
         {
             animator = GetComponent<Animator>();
             moveController = GetComponent<MovementController>();
@@ -17,10 +19,21 @@ namespace Character {
         public void SetTrigger(string name)
         {
             animator.SetTrigger(name);
+            if (name == "Celebrate")
+            {
+                isCelebrating = true;
+                Invoke(nameof(StopCelebrating), 3f); // match length of dance animation
+            }
+        }
+
+        private void StopCelebrating()
+        {
+            isCelebrating = false;
         }
 
         void Update()
         {
+            if (isCelebrating) return; // don't update speed during dance
             moveSpeed = moveController.GetHorizontalSpeedPercent();
             animator.SetFloat("Speed", moveSpeed);
         }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Core;
 using Character;
+using System.Collections;
 
 public class CelebrationManager : MonoBehaviour
 {
@@ -11,11 +12,6 @@ public class CelebrationManager : MonoBehaviour
     [Header("Particle Effect")]
     // Particle system that plays when a milestone is reached
     [SerializeField] private ParticleSystem celebrationParticles;
-
-    /*[Header("Audio")]
-    // Sound that plays during celebration
-    private AudioSource audioSource;
-    [SerializeField] private AudioClip celebrationSound; */
 
     [Header("UI")]
     // UI element that shows the reward message
@@ -78,12 +74,13 @@ public class CelebrationManager : MonoBehaviour
             catch { Debug.Log("Celebrate trigger not set up yet."); }
         }
 
-        // Play particle effect
-        if (celebrationParticles != null){
+        // Play particle effect and audio
+        if (celebrationParticles != null)
+        {
             AudioSource fireworksAudio = celebrationParticles.GetComponent<AudioSource>();
             celebrationParticles.Play();
-            if(fireworksAudio !=null)
-            fireworksAudio.Play();
+            if (fireworksAudio != null)
+                fireworksAudio.Play();
             Invoke(nameof(StopFireworks), 6f);
         }
 
@@ -98,6 +95,29 @@ public class CelebrationManager : MonoBehaviour
         {
             Debug.LogWarning("RewardUI or RewardText not found!");
         }
+
+        // Lock Y position during dance to prevent sinking
+        StartCoroutine(LockYPosition(6f));
+    }
+
+    // Locks the player's Y position during the dance
+    // so the animation doesn't sink them into the ground
+    private IEnumerator LockYPosition(float duration)
+    {
+        float lockedY = transform.position.y;
+        float elapsed = 0f;
+        Rigidbody rb = GetComponent<Rigidbody>();
+
+        while (elapsed < duration)
+        {
+            Vector3 pos = transform.position;
+            pos.y = lockedY;
+            transform.position = pos;
+            if (rb != null)
+                rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
     }
 
     // Hides the reward UI after delay
@@ -107,12 +127,15 @@ public class CelebrationManager : MonoBehaviour
             rewardUI.SetActive(false);
     }
 
-//Stops the fireworks after delay
-   private void StopFireworks()
+    // Stops the fireworks after delay
+    private void StopFireworks()
     {
-        if (celebrationParticles !=null){
-    celebrationParticles.Stop();
-    celebrationParticles.GetComponent<AudioSource>().Stop();
-        }   
+        if (celebrationParticles != null)
+        {
+            celebrationParticles.Stop();
+            AudioSource fireworksAudio = celebrationParticles.GetComponent<AudioSource>();
+            if (fireworksAudio != null)
+                fireworksAudio.Stop();
+        }
     }
 }

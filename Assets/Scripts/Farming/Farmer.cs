@@ -48,11 +48,11 @@ namespace Farming
             }
         }
 
-        // Waits half a second before triggering celebration
+        // Waits 1.5 seconds before triggering celebration
         // so the scene is fully loaded first
         private IEnumerator DelayedCelebration()
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1.5f);
             if (celebrationManager != null)
                 celebrationManager.TriggerStoreCelebration();
         }
